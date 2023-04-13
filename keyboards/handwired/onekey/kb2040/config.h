@@ -19,3 +19,6 @@
 #define I2C1_SDA_PIN GP12
 #define I2C1_SCL_PIN GP13
  
+#define ENCODERS_PAD_A { GP7 }
+#define ENCODERS_PAD_B { GP8 }
+#define ENCODER_RESOLUTION 3
