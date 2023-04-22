@@ -15,6 +15,8 @@
 
 // settings for the oled keyboard demo with Adafruit 0.91" OLED display on the Stemma QT port
 #define OLED_DISPLAY_128X32
+#define OLED_TIMEOUT 7200000 //2 hours
+
 #define I2C_DRIVER I2CD0
 #define I2C1_SDA_PIN GP12
 #define I2C1_SCL_PIN GP13
