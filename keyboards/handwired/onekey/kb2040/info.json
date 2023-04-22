@@ -2,10 +2,18 @@
     "keyboard_name": "Onekey KB2040",
     "development_board": "kb2040",
     "matrix_pins": {
-        "cols": ["GP4"],
-        "rows": ["GP5"]
+        "cols": ["GP4", "GP14"],
+        "rows": ["GP5", "GP15"]
     },
     "rgblight": {
         "pin": "GP17"
+    },
+    "layouts": {
+      "LAYOUT": {
+        "layout": [
+          {"x":0, "y":0, "matrix": [0, 0]},
+          {"x":1, "y":0, "matrix": [1, 1]}
+        ]
+      }
     }
 }
