@@ -2,8 +2,8 @@
     "keyboard_name": "Onekey KB2040",
     "development_board": "kb2040",
     "matrix_pins": {
-        "cols": ["GP4", "GP14"],
-        "rows": ["GP5", "GP15"]
+        "cols": ["GP4", "GP14", "GP16", "GP17"],
+        "rows": ["GP5", "GP15", "GP18", "GP19"]
     },
     "rgblight": {
         "pin": "GP17"
@@ -11,8 +11,17 @@
     "layouts": {
       "LAYOUT": {
         "layout": [
+          // Wheel Click
           {"x":0, "y":0, "matrix": [0, 0]}, // GP4 & GP5
+
+          // Knob Click
           {"x":1, "y":0, "matrix": [1, 1]}  // GP14 & GP15
+
+          // 4 Buttons
+          {"x":2, "y":0, "matrix": [2, 2]}, // GP16 & GP18
+          {"x":3, "y":0, "matrix": [3, 2]}  // GP17 & GP18
+          {"x":4, "y":0, "matrix": [2, 3]}, // GP16 & GP19
+          {"x":5, "y":0, "matrix": [3, 3]}  // GP17 & GP19
         ]
       }
     }

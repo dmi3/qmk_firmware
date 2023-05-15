@@ -3,7 +3,7 @@
 #include QMK_KEYBOARD_H
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    LAYOUT(KC_BTN3, KC_MEDIA_PLAY_PAUSE)
+    LAYOUT(KC_BTN3, KC_E, KC_MEDIA_PLAY_PAUSE, KC_MEDIA_NEXT_TRACK, KC_C, KC_D)
 };
 
 // https://github.com/qmk/qmk_firmware/blob/master/docs/feature_encoders.md
