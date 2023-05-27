@@ -1,9 +1,11 @@
 // Copyright 2020 QMK
 // SPDX-License-Identifier: GPL-2.0-or-later
 #include QMK_KEYBOARD_H
+#include <string.h>
+#include "raw_hid.h"
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    LAYOUT(KC_BTN3, KC_E, KC_MEDIA_PLAY_PAUSE, KC_MEDIA_NEXT_TRACK, KC_C, KC_D)
+    LAYOUT(KC_BTN3, KC_E, KC_MEDIA_PLAY_PAUSE, KC_C, KC_MEDIA_NEXT_TRACK, KC_D)
 };
 
 // https://github.com/qmk/qmk_firmware/blob/master/docs/feature_encoders.md
@@ -29,6 +31,8 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 // https://github.com/qmk/qmk_firmware/blob/master/docs/feature_oled_driver.md
 // https://docs.splitkb.com/hc/en-us/articles/360013811280-How-do-I-convert-an-image-for-use-on-an-OLED-display-
 #ifdef OLED_ENABLE
+
+oled_rotation_t oled_init_user(oled_rotation_t rotation) { return OLED_ROTATION_180; }
 
 static void render_logo(void) {
     static const char PROGMEM qmk_logo[] = {
@@ -69,9 +73,42 @@ static void render_logo(void) {
     oled_write_raw_P(qmk_logo, sizeof(qmk_logo));
 }
 
+#define RAW_EPSIZE 32
+char status[RAW_EPSIZE] = "<logo>";
+char status_prev[RAW_EPSIZE] = "";
+
+bool startsWith(const char *pre, const char *str)
+{
+    size_t lenpre = strlen(pre),
+           lenstr = strlen(str);
+    return lenstr < lenpre ? false : memcmp(pre, str, lenpre) == 0;
+}
+
 bool oled_task_user(void) {
-    render_logo();
+    if (strcmp(status, status_prev) != 0) {
+        oled_clear();
+        if (startsWith("<logo>", status)) {
+            render_logo();
+        } else {
+            oled_write_P(PSTR(status), false);
+        }
+        for(int i = 0; i < RAW_EPSIZE; i++)
+        {
+            status_prev[i] = status[i];
+        }
+    }
     return false;
+}
+
+#endif
+
+#ifdef RAW_ENABLE
+
+void raw_hid_receive(uint8_t *data, uint8_t length) {
+    for(int i = 0; i < length; i++)
+    {
+        status[i] = data[i];
+    }
 }
 
 #endif
