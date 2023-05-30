@@ -74,21 +74,36 @@ static void render_logo(void) {
 }
 
 #define RAW_EPSIZE 32
-char status[RAW_EPSIZE] = "<logo>";
+char mode = 'l';
+char status[RAW_EPSIZE] = "_";
 char status_prev[RAW_EPSIZE] = "";
 
-bool startsWith(const char *pre, const char *str)
-{
-    size_t lenpre = strlen(pre),
-           lenstr = strlen(str);
-    return lenstr < lenpre ? false : memcmp(pre, str, lenpre) == 0;
-}
+static uint16_t percent_timer;
 
 bool oled_task_user(void) {
+    oled_on();
+
+    if (mode == 'p' && timer_elapsed(percent_timer) > 1000) {
+       status[0] = '_';
+       status_prev[0] = ' ';
+       mode = 'l';
+    }
+
     if (strcmp(status, status_prev) != 0) {
         oled_clear();
-        if (startsWith("<logo>", status)) {
+        if (mode == 'l') {
             render_logo();
+        } else if (mode == 'p') {
+            int percent = atoi(status);
+            int pixels = percent * OLED_DISPLAY_WIDTH / 100;
+
+            for(int x = 0; x < pixels; x++)
+            {
+                for(int y = 0; y < OLED_DISPLAY_HEIGHT; y++)
+                {
+                    oled_write_pixel(x, y, true);
+                }
+            }
         } else {
             oled_write_P(PSTR(status), false);
         }
@@ -105,10 +120,17 @@ bool oled_task_user(void) {
 #ifdef RAW_ENABLE
 
 void raw_hid_receive(uint8_t *data, uint8_t length) {
-    for(int i = 0; i < length; i++)
-    {
-        status[i] = data[i];
+    mode = data[0];
+
+    if (mode == 'p') {
+        percent_timer = timer_read();
     }
+
+    for(int i = 1; i < length; i++)
+    {
+        status[i-1] = data[i];
+    }
+
 }
 
 #endif

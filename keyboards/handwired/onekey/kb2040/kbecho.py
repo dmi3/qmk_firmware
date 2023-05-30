@@ -5,8 +5,10 @@
 # https://gist.github.com/fauxpark/03a3efcc7dbdfbfe57791ea267b13c55
 
 # sudo pip install hid==1.0.4
-# sudo nano /etc/udev/rules.d/50-macro.conf
-# SUBSYSTEM=="usb", ATTRS{idVendor}=="0xfeed", ATTR{idProduct}=="0x6465", MODE="0666"
+# sudo apt-get install libhidapi-hidraw0 libhidapi-libusb0
+# sudo nano /etc/udev/rules.d/50-macro.rules
+# KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="feed", MODE="0666"
+# sudo udevadm control --reload-rules && udevadm trigger
 
 import sys
 import hid
@@ -59,4 +61,9 @@ def send_raw_packet(data):
         interface.close()
 
 if __name__ == '__main__':
-    send_raw_packet(sys.argv[1][:32].encode('ascii', 'replace'))
+    if not sys.argv[1] in ['t', 'p', 'l'] or (len(sys.argv) <= 2 and sys.argv[1] != "l"):
+        print("Usage:\n  kbecho.py t text # Echo text\n  kbecho.py p 55 # Show percent (progress)\n  kbecho.py l # Show logo")
+        exit(1)
+
+    data = str(" ".join(sys.argv[1:])).replace("\\n", "\n")[:30].encode('ascii', 'replace')
+    send_raw_packet(data)
