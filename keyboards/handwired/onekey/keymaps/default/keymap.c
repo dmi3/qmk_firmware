@@ -73,10 +73,10 @@ static void render_logo(void) {
     oled_write_raw_P(qmk_logo, sizeof(qmk_logo));
 }
 
-#define RAW_EPSIZE 32
+#define MAX_CHARS_ON_SCREEN 82
 char mode = 'l';
-char status[RAW_EPSIZE] = "_";
-char status_prev[RAW_EPSIZE] = "";
+char status[MAX_CHARS_ON_SCREEN] = "_";
+char status_prev[MAX_CHARS_ON_SCREEN] = "";
 
 static uint16_t percent_timer;
 
@@ -107,7 +107,7 @@ bool oled_task_user(void) {
         } else {
             oled_write_P(PSTR(status), false);
         }
-        for(int i = 0; i < RAW_EPSIZE; i++)
+        for(int i = 0; i < MAX_CHARS_ON_SCREEN; i++)
         {
             status_prev[i] = status[i];
         }
@@ -126,9 +126,17 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
         percent_timer = timer_read();
     }
 
+    int pos = 0;
+    if (mode == 'a') {
+        pos = strchr(status, 0)-status-1;
+    }
+
     for(int i = 1; i < length; i++)
     {
-        status[i-1] = data[i];
+        int p = pos+i-1;
+        if (p <= MAX_CHARS_ON_SCREEN) {
+            status[p] = data[i];
+        }
     }
 
 }

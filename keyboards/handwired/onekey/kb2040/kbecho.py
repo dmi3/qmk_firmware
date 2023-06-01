@@ -12,6 +12,7 @@
 
 import sys
 import hid
+import textwrap
 
 vendor_id  = 0xfeed
 product_id = 0x6465
@@ -52,18 +53,27 @@ def send_raw_packet(data):
 
     try:
         interface.write(request_packet)
-
-        response_packet = interface.read(32, timeout=1000)
-
-        print("Response:")
-        print(response_packet)
     finally:
         interface.close()
 
 if __name__ == '__main__':
-    if not sys.argv[1] in ['t', 'p', 'l'] or (len(sys.argv) <= 2 and sys.argv[1] != "l"):
-        print("Usage:\n  kbecho.py t text # Echo text\n  kbecho.py p 55 # Show percent (progress)\n  kbecho.py l # Show logo")
+    if len(sys.argv)==1 or not sys.argv[1] in ['t', 'p', 'l', 'a'] or (len(sys.argv) <= 2 and sys.argv[1] != "l"):
+        print("""
+Usage:
+  kbecho.py t text # Echo text
+  kbecho.py a text # Append text
+  kbecho.py p 55   # Show percent (progress)
+  kbecho.py l      # Show logo
+""")
         exit(1)
 
-    data = str(" ".join(sys.argv[1:])).replace("\\n", "\n")[:30].encode('ascii', 'replace')
-    send_raw_packet(data)
+    data = str(" ".join(sys.argv[2:])).replace("\\n", "\n")
+    chunks=textwrap.wrap(data,29)
+
+    if len(chunks) > 0:
+        send_raw_packet((sys.argv[1]+chunks[0]).encode('ascii', 'replace'))
+    else:
+        send_raw_packet(sys.argv[1].encode('ascii', 'replace'))
+
+    for chunk in chunks[1:]:
+        send_raw_packet(('a'+chunk).encode('ascii', 'replace'))
