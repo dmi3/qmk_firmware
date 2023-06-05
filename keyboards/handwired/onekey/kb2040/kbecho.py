@@ -20,6 +20,8 @@ product_id = 0x6465
 usage_page = 0xFF60
 usage      = 0x61
 
+max_len = 32-3
+
 def get_raw_hid_interface():
     device_interfaces = hid.enumerate(vendor_id, product_id)
     # usage_page is always zero
@@ -67,13 +69,13 @@ Usage:
 """)
         exit(1)
 
-    data = str(" ".join(sys.argv[2:])).replace("\\n", "\n")
-    chunks=textwrap.wrap(data,29)
+    data = str(" ".join(sys.argv[2:]))
+    chunks = [data[i:i+max_len] for i in range(0, len(data), max_len)]
 
     if len(chunks) > 0:
-        send_raw_packet((sys.argv[1]+chunks[0]).encode('ascii', 'replace'))
+        send_raw_packet((sys.argv[1]+chunks[0]).replace("\\n", "\n").encode('ascii', 'replace'))
     else:
         send_raw_packet(sys.argv[1].encode('ascii', 'replace'))
 
     for chunk in chunks[1:]:
-        send_raw_packet(('a'+chunk).encode('ascii', 'replace'))
+        send_raw_packet(('a'+chunk).replace("\\n", "\n").encode('ascii', 'replace'))

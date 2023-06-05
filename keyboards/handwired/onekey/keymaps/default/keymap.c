@@ -73,17 +73,17 @@ static void render_logo(void) {
     oled_write_raw_P(qmk_logo, sizeof(qmk_logo));
 }
 
-#define MAX_CHARS_ON_SCREEN 82
+#define MAX_CHARS_ON_SCREEN 80
 char mode = 'l';
 char status[MAX_CHARS_ON_SCREEN] = "_";
 char status_prev[MAX_CHARS_ON_SCREEN] = "";
 
-static uint16_t percent_timer;
+static uint16_t logo_timer;
 
 bool oled_task_user(void) {
-    oled_on();
+    int logo_timeout = mode == 'p' ? 1000 : 600000;
 
-    if (mode == 'p' && timer_elapsed(percent_timer) > 1000) {
+    if (mode != 'l' && timer_elapsed(logo_timer) > logo_timeout) {
        status[0] = '_';
        status_prev[0] = ' ';
        mode = 'l';
@@ -91,6 +91,7 @@ bool oled_task_user(void) {
 
     if (strcmp(status, status_prev) != 0) {
         oled_clear();
+        oled_on();
         if (mode == 'l') {
             render_logo();
         } else if (mode == 'p') {
@@ -121,20 +122,17 @@ bool oled_task_user(void) {
 
 void raw_hid_receive(uint8_t *data, uint8_t length) {
     mode = data[0];
-
-    if (mode == 'p') {
-        percent_timer = timer_read();
-    }
+    logo_timer = timer_read();
 
     int pos = 0;
     if (mode == 'a') {
-        pos = strchr(status, 0)-status-1;
+        pos = strchr(status, 0)-status;
     }
 
     for(int i = 1; i < length; i++)
     {
         int p = pos+i-1;
-        if (p <= MAX_CHARS_ON_SCREEN) {
+        if (p < MAX_CHARS_ON_SCREEN) {
             status[p] = data[i];
         }
     }
