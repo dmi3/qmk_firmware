@@ -5,7 +5,7 @@
 #include "raw_hid.h"
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    LAYOUT(KC_BTN3, KC_E, KC_MEDIA_PLAY_PAUSE, KC_C, KC_MEDIA_NEXT_TRACK, KC_D)
+    LAYOUT(KC_BTN3, KC_E, KC_MEDIA_PLAY_PAUSE, KC_WWW_BACK, KC_MEDIA_NEXT_TRACK, KC_WWW_FORWARD)
 };
 
 // https://github.com/qmk/qmk_firmware/blob/master/docs/feature_encoders.md
@@ -81,7 +81,7 @@ char status_prev[MAX_CHARS_ON_SCREEN] = "";
 static uint16_t logo_timer;
 
 bool oled_task_user(void) {
-    int logo_timeout = mode == 'p' ? 1000 : 600000;
+    int logo_timeout = mode == 'p' ? 1000 : 60000;
 
     if (mode != 'l' && timer_elapsed(logo_timer) > logo_timeout) {
        status[0] = '_';
@@ -108,10 +108,7 @@ bool oled_task_user(void) {
         } else {
             oled_write_P(PSTR(status), false);
         }
-        for(int i = 0; i < MAX_CHARS_ON_SCREEN; i++)
-        {
-            status_prev[i] = status[i];
-        }
+        strcpy(status_prev, status);
     }
     return false;
 }
