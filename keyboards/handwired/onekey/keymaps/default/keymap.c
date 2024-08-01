@@ -5,7 +5,7 @@
 #include "raw_hid.h"
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    LAYOUT(KC_BTN3, KC_E, KC_MEDIA_PLAY_PAUSE, KC_WWW_BACK, KC_MEDIA_NEXT_TRACK, KC_WWW_FORWARD)
+    LAYOUT(KC_MY_COMPUTER, KC_CALCULATOR, KC_MEDIA_PLAY_PAUSE, KC_WWW_BACK, KC_MEDIA_NEXT_TRACK, KC_WWW_FORWARD)
 };
 
 // https://github.com/qmk/qmk_firmware/blob/master/docs/feature_encoders.md
